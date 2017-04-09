@@ -260,36 +260,10 @@ case $yn in
 		cd /etc/csf/ui
 		openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=${country}/ST=${state}/L=${city}/O=${organization}/CN=${domain}" -keyout server.key -out server.crt
 		chmod 400 server.*
-		cp server.key /etc/pki/tls/certs/server.key
-		cp server.crt /etc/pki/tls/certs/server.crt
-		sed -i -e 's|SSLCertificateFile /etc/pki/tls/certs/localhost.crt|SSLCertificateFile /etc/pki/tls/certs/server.crt|g' /etc/httpd/conf.d/ssl.conf
-		sed -i -e 's|SSLCertificateKeyFile /etc/pki/tls/private/localhost.key|SSLCertificateKeyFile /etc/pki/tls/certs/server.key|g' /etc/httpd/conf.d/ssl.conf
 	else
 		cd /etc/csf/ui
 		openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -subj "/C=${country}/ST=${state}/L=${city}/O=${organization}/CN=${domain}" -keyout server.key -out server.crt
 		chmod 400 server.*
-		mkdir /etc/apache2/ssl/
-		a2enmod ssl
-		cp server.key /etc/apache2/ssl/server.key
-		cp server.crt /etc/apache2/ssl/server.crt
-		ln -s /etc/apache2/mods-available/ssl.load /etc/apache2/mods-enabled/ssl.load
-		ln -s /etc/apache2/mods-available/ssl.conf /etc/apache2/mods-enabled/ssl.conf
-		# printf "\n${info}${bold}Note:${normal} You can edit this file @ /etc/apache2/sites-available/domain.com.conf\n"
-		# read -e -p "Your FQDN: " -i "your-domain.com" domain
-		# read -e -p "Your Email: " -i "you@your-domain.com" email
-		echo "
-		<virtualhost *:443>
-		ServerName ${domain}
-		ServerAlias *.${domain}
-		ServerAdmin ${email}
-		DocumentRoot "/var/www/html"
-		ErrorLog ${APACHE_LOG_DIR}/error.log
-		CustomLog ${APACHE_LOG_DIR}/access.log combined
-		SSLEngine on
-		SSLProtocol SSLv3
-		SSLCertificateFile /etc/apache2/ssl/server.crt
-		SSLCertificateKeyFile /etc/apache2/ssl/server.key
-		</virtualhost>" >> /etc/apache2/sites-available/${domain}.conf
 		cd 
 	fi
 	} &> install.log
